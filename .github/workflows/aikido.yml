@@ -1,0 +1,17 @@
+name: Aikido Security Scan
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  aikido-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Aikido Scanner
+      uses: aikido-security/github-actions-workflow@v1
+      with:
+        secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
