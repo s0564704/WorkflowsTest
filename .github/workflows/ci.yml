@@ -23,19 +23,6 @@ jobs:
         pip install flake8 bandit autopep8
         pip install -r requirements.txt
 
-    - name: Run Formatter
-      run: autopep8 -i -r --exclude=venv,__pycache__,.git,.github .
-
-    - name: Run Formatter
-      run: autopep8 -i -r --exclude=venv,__pycache__,.git,.github .
-    
-    - name: Commit formatting changes
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add -A
-        git diff --staged --quiet || git commit -m "style: auto-format code with autopep8"
-    
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
