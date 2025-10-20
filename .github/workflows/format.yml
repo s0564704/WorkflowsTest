@@ -1,4 +1,4 @@
-name: CI Pipeline: Formatter
+name: CI Pipeline Formatter
 
 on:
   push:
