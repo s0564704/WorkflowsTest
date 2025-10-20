@@ -6,7 +6,6 @@ on:
 jobs:
   security-scan:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -22,6 +21,7 @@ jobs:
 
     # Check for sensitive files
     - name: Check for sensitive files
+      continue-on-error: true
       run: |
         SENSITIVE_FILES=$(find . -type f \( \
           -name ".env*" \
@@ -44,17 +44,20 @@ jobs:
 
     # Better secret detection for passwords in dicts
     - name: detect-secrets scan
+      continue-on-error: true
       uses: reviewdog/action-detect-secrets@master
       with:
         reporter: github-pr-review
     
    # Clone custom rules into workspace
     - name: Get custom rule repos
+      continue-on-error: true
       run: |
         git clone --depth 1 https://github.com/trailofbits/semgrep-rules.git .semgrep/trailofbits
     
     # SAST + Secrets
     - name: Semgrep Scan
+      continue-on-error: true
       uses: returntocorp/semgrep-action@v1
       with:
         config: >-
@@ -78,6 +81,7 @@ jobs:
     
     # Dependency scanning
     - name: Trivy Scan
+      continue-on-error: true
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'fs'
