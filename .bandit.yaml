@@ -1,0 +1,11 @@
+exclude_dirs:
+  - /venv
+  - /tests
+  - /__pycache__
+
+tests:
+  - B105
+  - B106
+  - B107
+  - B201
+  - B104
