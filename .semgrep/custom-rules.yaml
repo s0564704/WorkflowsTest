@@ -1,0 +1,40 @@
+rules:
+  - id: python-hardcoded-credentials-in-dict
+    pattern-either:
+      - pattern: |
+          {
+            ...,
+            '$KEY': $VALUE,
+            ...
+          }
+      - pattern: |
+          {
+            ...,
+            "$KEY": $VALUE,
+            ...
+          }
+    metavariable-regex:
+      metavariable: $KEY
+      regex: (?i).*(password|passwd|pwd|pass|secret|token|api_key|apikey|access_key|accesskey|private_key|privatekey).*
+    message: Hardcoded credential found in dictionary (password/secret/token/key)
+    languages: [python]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-798: Use of Hard-coded Credentials"
+  
+  - id: flask-dangerous-http-methods
+    pattern-either:
+      - pattern: |
+          @app.route(..., methods=[..., $METHOD, ...])
+      - pattern: |
+          @app.route(..., methods=[..., "$METHOD", ...])
+    metavariable-regex:
+      metavariable: $METHOD
+      regex: ^(TRACE|OPTIONS|PUT)$
+    message: Dangerous HTTP method detected ($METHOD) - review if necessary
+    languages: [python]
+    severity: WARNING
+    metadata:
+      category: security
+      cwe: "CWE-16: Configuration"
