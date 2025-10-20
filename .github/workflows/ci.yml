@@ -42,6 +42,7 @@ jobs:
           p/ci
           p/bandit
           p/trailofbits
+          .semgrep/custom-rules.yaml
     
     # Dependency scanning
     - name: Trivy Scan
