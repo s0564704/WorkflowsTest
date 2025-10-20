@@ -20,6 +20,28 @@ jobs:
         path: ./
         extra_args: --json
 
+    # Check for sensitive files
+    - name: Check for sensitive files
+      run: |
+        SENSITIVE_FILES=$(find . -type f \( \
+          -name ".env*" \
+          -o -name "*.pem" \
+          -o -name "*.key" \
+          -o -name "*secret*.yml" \
+          -o -name "*secret*.yaml" \
+          -o -name "*secret*.json" \
+          -o -name "*secret*" \
+          -o -name "credentials*" \
+        \) ! -path "./.git/*")
+        
+        if [ -n "$SENSITIVE_FILES" ]; then
+          echo "❌ Sensitive files found:"
+          echo "$SENSITIVE_FILES"
+          exit 1
+        else
+          echo "✅ No sensitive files detected"
+        fi
+
     # Better secret detection for passwords in dicts
     - name: detect-secrets scan
       uses: reviewdog/action-detect-secrets@master
