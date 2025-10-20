@@ -14,28 +14,112 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Detect file types
+      id: detect
+      run: |
+        echo "has_python=$(find . -name "*.py" -not -path "*/venv/*" -not -path "*/__pycache__/*" -not -path "*/.git/*" | grep -q . && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "has_js=$(find . \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.json" -o -name "*.html" -o -name "*.css" \) -not -path "*/node_modules/*" -not -path "*/.git/*" | grep -q . && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "has_csharp=$(find . -name "*.cs" -not -path "*/.git/*" | grep -q . && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "has_lua=$(find . -name "*.lua" -not -path "*/.git/*" | grep -q . && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "has_shell=$(find . -name "*.sh" -not -path "*/.git/*" | grep -q . && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "has_nginx=$(find . -name "*.conf" -not -path "*/.git/*" | grep -q . && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "has_docker=$(find . \( -name "Dockerfile*" -o -name "docker-compose*.yml" -o -name "compose.yml" \) -not -path "*/.git/*" | grep -q . && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "has_requirements=$(find . -name "requirements*.txt" -not -path "*/.git/*" | grep -q . && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+    # Python Setup
     - name: Set up Python
+      if: steps.detect.outputs.has_python == 'true' || steps.detect.outputs.has_nginx == 'true' || steps.detect.outputs.has_requirements == 'true'
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
-    - name: Install dependencies
+    - name: Install Python formatters
+      if: steps.detect.outputs.has_python == 'true'
+      run: pip install autopep8
+
+    - name: Format Python files
+      if: steps.detect.outputs.has_python == 'true'
+      run: autopep8 -i -r --exclude=venv,__pycache__,.git,.github .
+
+    # JavaScript/TypeScript/JSON/HTML/CSS Setup
+    - name: Set up Node.js
+      if: steps.detect.outputs.has_js == 'true' || steps.detect.outputs.has_docker == 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Prettier
+      if: steps.detect.outputs.has_js == 'true' || steps.detect.outputs.has_docker == 'true'
+      run: npm install -g prettier @prettier/plugin-xml
+
+    - name: Format JS/TS/JSON/HTML/CSS files
+      if: steps.detect.outputs.has_js == 'true'
+      run: prettier --write "**/*.{js,jsx,ts,tsx,json,html,css}" --ignore-path .gitignore
+
+    # C# Setup
+    - name: Set up .NET
+      if: steps.detect.outputs.has_csharp == 'true'
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0'
+
+    - name: Format C# files
+      if: steps.detect.outputs.has_csharp == 'true'
+      run: dotnet format --include "**/*.cs"
+
+    # Lua Setup
+    - name: Install StyLua
+      if: steps.detect.outputs.has_lua == 'true'
       run: |
-        python -m pip install --upgrade pip
-        pip install autopep8
+        curl -L https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux-x86_64.zip -o stylua.zip
+        unzip stylua.zip
+        chmod +x stylua
+        sudo mv stylua /usr/local/bin/
 
-    - name: Run Formatter
-      run: autopep8 -i -r --exclude=venv,__pycache__,.git,.github .
+    - name: Format Lua files
+      if: steps.detect.outputs.has_lua == 'true'
+      run: stylua .
 
-    - name: Run Formatter
-      run: autopep8 -i -r --exclude=venv,__pycache__,.git,.github .
-    
+    # Shell Scripts Setup
+    - name: Install shfmt
+      if: steps.detect.outputs.has_shell == 'true'
+      run: |
+        curl -L https://github.com/mvdan/sh/releases/latest/download/shfmt_v3.8.0_linux_amd64 -o shfmt
+        chmod +x shfmt
+        sudo mv shfmt /usr/local/bin/
+
+    - name: Format Shell scripts
+      if: steps.detect.outputs.has_shell == 'true'
+      run: find . -name "*.sh" -not -path "*/.git/*" -exec shfmt -w {} \;
+
+    # Nginx Config Setup
+    - name: Install nginx formatter
+      if: steps.detect.outputs.has_nginx == 'true'
+      run: pip install nginxfmt
+
+    - name: Format Nginx configs
+      if: steps.detect.outputs.has_nginx == 'true'
+      run: find . -name "*.conf" -not -path "*/.git/*" -exec nginxfmt {} \;
+
+    # Docker/Dockerfile Setup
+    - name: Format Dockerfiles
+      if: steps.detect.outputs.has_docker == 'true'
+      run: |
+        find . \( -name "Dockerfile*" -o -name "docker-compose*.yml" -o -name "compose.yml" \) -not -path "*/.git/*" -exec prettier --write {} \;
+
+    # Requirements.txt Setup
+    - name: Format requirements.txt
+      if: steps.detect.outputs.has_requirements == 'true'
+      run: |
+        find . -name "requirements*.txt" -not -path "*/.git/*" -exec sort -u {} -o {} \;
+
+    # Commit all changes
     - name: Commit formatting changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add -A
-        git diff --staged --quiet || git commit -m "style: auto-format code with autopep8"
+        git diff --staged --quiet || git commit -m "style: auto-format code"
     
     - name: Push changes
       uses: ad-m/github-push-action@master
