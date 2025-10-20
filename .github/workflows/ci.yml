@@ -23,12 +23,6 @@ jobs:
         pip install flake8 bandit autopep8
         pip install -r requirements.txt
 
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
-
     - name: Run Linter
       run: flake8 . --max-line-length=100 --exclude=venv,__pycache__,.git || true
 
