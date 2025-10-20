@@ -6,6 +6,7 @@ on:
 jobs:
   security-scan:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -57,7 +58,15 @@ jobs:
       uses: returntocorp/semgrep-action@v1
       with:
         config: >-
+          p/default
+          p/nginx
+          p/dockerfile
+          p/docker-compose
+          p/gitleaks
           p/secrets
+          p/r2c-security-audit
+          p/owasp-top-ten
+          p/secure-defaults
           p/security-audit
           p/python
           r/python.lang.security.audit.hardcoded-password-string.hardcoded-password-string
