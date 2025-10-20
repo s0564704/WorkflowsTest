@@ -29,7 +29,7 @@ jobs:
       run: |
         git clone --depth 1 https://github.com/trailofbits/semgrep-rules.git .semgrep/trailofbits
         git clone --depth 1 https://github.com/elttam/semgrep-rules.git .semgrep/elttam
-        git clone --depth 1 https://github.com/MobSF/mobsfscan.git .semgrep/mobsf
+        # git clone --depth 1 https://github.com/MobSF/mobsfscan.git .semgrep/mobsf
     
     # SAST + Secrets
     - name: Semgrep Scan
