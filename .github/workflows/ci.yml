@@ -24,16 +24,13 @@ jobs:
       with:
         reporter: github-pr-review
     
-    # Clone custom rule repositories
-    - name: Get Trail of Bits rules
-      run: git clone --depth 1 https://github.com/trailofbits/semgrep-rules.git /tmp/trailofbits-rules
+   # Clone custom rules into workspace
+    - name: Get custom rule repos
+      run: |
+        git clone --depth 1 https://github.com/trailofbits/semgrep-rules.git .semgrep/trailofbits
+        git clone --depth 1 https://github.com/elttam/semgrep-rules.git .semgrep/elttam
+        git clone --depth 1 https://github.com/MobSF/mobsfscan.git .semgrep/mobsf
     
-    - name: Get elttam rules
-      run: git clone --depth 1 https://github.com/elttam/semgrep-rules.git /elttam-rules
-    
-    - name: Get MobSF rules
-      run: git clone --depth 1 https://github.com/MobSF/mobsfscan.git /mobsf-rules
-
     # SAST + Secrets
     - name: Semgrep Scan
       uses: returntocorp/semgrep-action@v1
@@ -47,8 +44,8 @@ jobs:
           p/ci
           p/bandit
           p/trailofbits
-          /elttam-rules/rules
-          /mobsf-rules/mobsfscan/rules/semgrep
+          .semgrep/elttam/rules
+          .semgrep/mobsf/mobsfscan/rules/semgrep
     
     # Dependency scanning
     - name: Trivy Scan
