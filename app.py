@@ -11,6 +11,8 @@ db_config = {
     'port': 5432
 }
 # Custom headers
+
+
 @app.after_request
 def add_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -20,10 +22,14 @@ def add_headers(response):
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
 # Endpoint 1: Simple GET only
+
+
 @app.route('/api/hello', methods=['GET'])
 def hello():
     return jsonify({'message': 'Hello World!', 'status': 'success'})
 # Endpoint 2: GET, POST, PUT, OPTIONS
+
+
 @app.route('/api/data', methods=['GET', 'POST', 'PUT', 'OPTIONS'])
 def data():
     if request.method == 'GET':
@@ -35,6 +41,8 @@ def data():
     elif request.method == 'OPTIONS':
         return '', 204
 # Endpoint 3: GET, POST, PUT, TRACE, OPTIONS
+
+
 @app.route('/api/info', methods=['GET', 'POST', 'PUT', 'TRACE', 'OPTIONS'])
 def info():
     if request.method == 'GET':
@@ -47,8 +55,7 @@ def info():
         return jsonify({'method': 'TRACE', 'path': request.path})
     elif request.method == 'OPTIONS':
         return '', 204
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
-
-
-
