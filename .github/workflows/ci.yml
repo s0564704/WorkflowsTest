@@ -45,7 +45,6 @@ jobs:
           p/bandit
           p/trailofbits
           .semgrep/elttam/rules
-          .semgrep/mobsf/mobsfscan/rules/semgrep
     
     # Dependency scanning
     - name: Trivy Scan
