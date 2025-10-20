@@ -17,8 +17,6 @@ jobs:
       uses: trufflesecurity/trufflehog@main
       with:
         path: ./
-        base: main
-        head: HEAD
     
     # SAST + Secrets
     - name: Semgrep Scan
