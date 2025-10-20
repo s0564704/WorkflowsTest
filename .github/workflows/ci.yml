@@ -17,15 +17,22 @@ jobs:
       uses: trufflesecurity/trufflehog@main
       with:
         path: ./
+
+    # Better secret detection for passwords in dicts
+    - name: detect-secrets scan
+      uses: reviewdog/action-detect-secrets@master
+      with:
+        reporter: github-pr-review
     
     # SAST + Secrets
     - name: Semgrep Scan
       uses: returntocorp/semgrep-action@v1
       with:
         config: >-
-          p/security-audit
           p/secrets
+          p/security-audit
           p/python
+          r/python.lang.security.audit.hardcoded-password-string.hardcoded-password-string
     
     # Dependency scanning
     - name: Trivy Scan
