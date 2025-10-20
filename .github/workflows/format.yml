@@ -1,11 +1,11 @@
-name: CI Pipeline
+name: CI Pipeline: Formatter
 
 on:
   push:
     branches: ['**']
 
 jobs:
-  lint-and-security:
+  format:
     runs-on: ubuntu-latest
     permissions:
       contents: write
