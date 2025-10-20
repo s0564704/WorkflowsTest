@@ -24,6 +24,16 @@ jobs:
       with:
         reporter: github-pr-review
     
+    # Clone custom rule repositories
+    - name: Get Trail of Bits rules
+      run: git clone --depth 1 https://github.com/trailofbits/semgrep-rules.git /tmp/trailofbits-rules
+    
+    - name: Get elttam rules
+      run: git clone --depth 1 https://github.com/elttam/semgrep-rules.git /tmp/elttam-rules
+    
+    - name: Get MobSF rules
+      run: git clone --depth 1 https://github.com/MobSF/mobsfscan.git /tmp/mobsf-rules
+
     # SAST + Secrets
     - name: Semgrep Scan
       uses: returntocorp/semgrep-action@v1
@@ -33,6 +43,12 @@ jobs:
           p/security-audit
           p/python
           r/python.lang.security.audit.hardcoded-password-string.hardcoded-password-string
+          p/flask
+          p/ci
+          p/bandit
+          p/trailofbits
+          /tmp/elttam-rules/rules
+          /tmp/mobsf-rules/mobsfscan/rules/semgrep
     
     # Dependency scanning
     - name: Trivy Scan
