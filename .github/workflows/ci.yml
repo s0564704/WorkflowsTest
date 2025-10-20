@@ -30,7 +30,7 @@ jobs:
       run: flake8 . --max-line-length=100 --exclude=venv,__pycache__,.git || true
 
     - name: Run bandit security scan
-      run: bandit -r . -c .bandit -f json -o bandit-report.json --exclude ./venv,./tests || true
+      run: bandit -r . -c .bandit.yaml -f json -o bandit-report.json --exclude ./venv,./tests || true
 
     - name: Display bandit results
       run: bandit -r . --exclude ./venv,./tests || true
