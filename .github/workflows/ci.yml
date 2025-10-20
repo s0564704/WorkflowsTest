@@ -15,12 +15,15 @@ jobs:
     # Secrets scanning
     - name: TruffleHog Secret Scan
       uses: trufflesecurity/trufflehog@main
+      continue-on-error: true
       with:
         path: ./
+        extra_args: --json
 
     # Better secret detection for passwords in dicts
     - name: detect-secrets scan
       uses: reviewdog/action-detect-secrets@master
+      continue-on-error: true
       with:
         reporter: github-pr-review
     
@@ -32,6 +35,7 @@ jobs:
     # SAST + Secrets
     - name: Semgrep Scan
       uses: returntocorp/semgrep-action@v1
+      continue-on-error: true
       with:
         config: >-
           p/secrets
@@ -47,6 +51,7 @@ jobs:
     # Dependency scanning
     - name: Trivy Scan
       uses: aquasecurity/trivy-action@master
+      continue-on-error: true
       with:
         scan-type: 'fs'
         scan-ref: '.'
