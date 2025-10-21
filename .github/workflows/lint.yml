@@ -4,7 +4,7 @@ on:
     branches: ['**']
 
 jobs:
-    flake8-lint:
+  flake8-lint:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source repository
