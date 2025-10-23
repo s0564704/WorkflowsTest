@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 import psycopg2
+
 app = Flask(__name__)
 # Database connection with hardcoded credentials (NOT USED - for linter testing)
 db_config = {
